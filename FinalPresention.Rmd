@@ -1,0 +1,74 @@
+---
+title: "Data Science Programs offered in the US"
+author: "elobo"
+date: "23/10/2016"
+output: ioslides_presentation
+---
+
+## Synopsis
+
+This presentation wants to ilustrate a quick view on a shiny app designed to show list of programs related to Data Science field offered by different schools along the Unated States.
+
+Dataset is available at Kaggle [link](https://www.kaggle.com/sriharirao/datascience-universities-across-us)
+
+
+## Overview of the app
+
+In order to use the app, the user must select which US State he is interested to check, and a summary of program registered by schools on that state will summarize into a bar plot. There is the possibily of choosing the type of program: Master or Certification degree.
+
+In order to inspect results, the info is distributed into three main panel. 
+
+* One panel for ginving general documentation
+* Other panel to check the programs by shcools and 
+* A last panel to check program duration.
+
+Finally, a calculation showing the amount of programs given for that state is shown and the bottom of program panel.
+
+Shiny app is available at this shinyapp.io [link](http://edlobo.shinyapps.io/FInalC9/)
+
+## Shiny app
+
+```{r code1, echo = FALSE, message=FALSE, eval=TRUE}
+
+library(dplyr)
+library(ggplot2)
+data <- read.csv("/Users/elobo/HomeRstudio/Curso9/Shiny/DSuniversity/data/timesMergedData.csv")
+# check cols with NA
+        calc_NA <- function(x){sum(is.na(x))/length(x)*100}
+        check_NA <- as.data.frame(apply(data,2,calc_NA))
+# check with numbers
+# table(check_NA[,1] > 20.0)
+# take off columns with NAs
+        valid <- check_NA[,1] > 20.0
+        validnames <- rownames(check_NA)[!valid]
+
+finaldf <- data[,validnames]
+finaldf <- unique(finaldf)
+minidf <- finaldf %>% filter(STATE=="Washington", TYPE=="M")
+```
+
+Shiny output when choosing a particular state
+
+```{r code2, echo = FALSE, eval=TRUE, dpi=90}
+
+
+        G1 <- ggplot(data=minidf, aes(x=PROGRAM)) + geom_bar(aes(fill=SCHOOL), alpha=0.8) + coord_flip() +
+                theme(legend.position="bottom", legend.key.size=unit(0.5, "cm")) #+
+                #theme(axis.text.x = element_text(size=rel(0.5)))
+                        #theme(axis.text.x = element_text(angle = 90, hjust = 1), legend.position="bottom") 
+        G1
+```
+
+## Shiny app (cont)
+
+Sample output
+
+```{r code3, echo = FALSE, message=FALSE, eval=TRUE}
+        G2 <- ggplot(data=minidf, aes(x=PROGRAM, colour=SCHOOL)) + geom_point(aes(y=DURATION), alpha=0.8, size=4) +
+                        theme_bw() +
+                        theme(axis.text.x = element_text(size=3.5, angle = 45, hjust = 1), legend.position="bottom")
+                
+        G2
+
+```
+
